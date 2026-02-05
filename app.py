@@ -193,7 +193,7 @@ def after_request(response):
 
 @app.route("/")
 def serve_frontend():
-    return send_from_directory('.', 'index.html')
+    return render_template('.', 'index.html')
 
 
 # -------------------------------
