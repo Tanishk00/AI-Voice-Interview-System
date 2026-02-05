@@ -356,22 +356,22 @@ OUTPUT RULES:
 - No explanations, no headings, no extra text
 """
 
-    #    #---------- LIMIT CHECK OF USER EMAIL ----------
-    #     conn = get_db_connection()
-    #     cursor = conn.cursor()
-    #     cursor.execute("""
-    #         SELECT COUNT(*) as count
-    #         FROM interview_results
-    #         WHERE email=?
-    #     """, (USER_INFO_CACHE.get("email"),))
-    #     count = cursor.fetchone()["count"]
-    #     conn.close()
+    #---------- LIMIT CHECK OF USER EMAIL ----------
+          conn = get_db_connection()
+          cursor = conn.cursor()
+          cursor.execute("""
+              SELECT COUNT(*) as count
+              FROM interview_results
+              WHERE email=?
+          """, (USER_INFO_CACHE.get("email"),))
+          count = cursor.fetchone()["count"]
+          conn.close()
 
-    #     if count >= 2:
-    #         return jsonify({
-    #             "success": False,
-    #             "error": "Interview limit exceeded . Please get subscription to continue."
-    #         }), 403
+          if count >= 2:
+              return jsonify({
+                  "success": False,
+                  "error": "Interview limit exceeded . Please get subscription to continue."
+              }), 403
 
         questions_text = generate_interview_questions(prompt)
 
@@ -602,3 +602,4 @@ def admin_panel():
 
 if __name__ == "__main__":
     app.run(host="127.0.0.1", port=5000, debug=True)
+
