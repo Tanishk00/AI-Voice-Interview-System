@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Interviewee Credentials </title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 10px; }
+        th { background: #333; color: white; }
+    </style>
+</head>
+<body>
+
+<h2>Interview Submissions (Admin)</h2>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>User Email</th>
+        <th>Resume Email</th>
+        <th>Date</th>
+    </tr>
+
+    {% for row in results %}
+    <tr>
+        <td>{{ row.id }}</td>
+        <td>{{ row.name }}</td>
+        <td>{{ row.email }}</td>
+        <td>{{ row.resume_email or "N/A" }}</td>
+        <td>{{ row.created_at }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>

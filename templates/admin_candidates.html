@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Candidates</title>
+    <style>
+        body { font-family: Arial; padding: 30px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 10px; }
+        th { background: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h2>📋 Candidate Resume Emails</h2>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Resume Email</th>
+            <th>Created At</th>
+        </tr>
+
+        {% for c in candidates %}
+        <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.resume_email }}</td>
+            <td>{{ c.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
