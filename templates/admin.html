@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Interview Submissions</title>
+
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            padding: 30px;
+            background: #f3f4f6;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #1f2937;
+            color: white;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        .box {
+            max-height: 220px;
+            overflow-y: auto;
+            background: #f8fafc;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            line-height: 1.6;
+        }
+
+        details summary {
+            cursor: pointer;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 8px;
+        }
+
+        ul {
+            padding-left: 18px;
+            margin: 8px 0;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .small {
+            font-size: 13px;
+            color: #374151;
+        }
+
+        a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>Interview Submissions (Admin)</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>User Email</th>
+            <th>Resume Email</th>
+            <th>Scorecard</th>
+            <th>Submitted Questions</th>
+            <th>Submitted Answers</th>
+            <th>Resume</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for row in results %}
+        <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.email }}</td>
+            <td>{{ row.resume_email }}</td>
+
+            <!-- SCORECARD -->
+            <td>
+                {% set score = row.scorecard | fromjson %}
+                <details>
+                    <summary>View Scorecard</summary>
+                    <div class="box small">
+
+                        <div style="margin-bottom:12px;">
+                            <strong>Overall Score:</strong> {{ score.overall_score }} / 10
+                        </div>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px;">
+                            <div><b>Communication:</b> {{ score.communication }}</div>
+                            <div><b>Confidence:</b> {{ score.confidence }}</div>
+                            <div><b>Technical:</b> {{ score.technical_knowledge }}</div>
+                            <div><b>Grammar:</b> {{ score.grammar }}</div>
+                            <div><b>Answer Quality:</b> {{ score.answer_quality }}</div>
+                        </div>
+
+                        <h4>Summary</h4>
+                        <div style="margin-bottom:12px;">
+                            {{ score.summary }}
+                        </div>
+
+                        <h4>Strengths</h4>
+                        <ul>
+                            {% for s in score.strengths %}
+                                <li>{{ s }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h4>Areas for Improvement</h4>
+                        <ul>
+                            {% for a in score.areas_for_improvement %}
+                                <li>{{ a }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h4>Recommendations</h4>
+                        <ul>
+                            {% for r in score.recommendations %}
+                                <li>{{ r }}</li>
+                            {% endfor %}
+                        </ul>
+
+                    </div>
+                </details>
+            </td>
+
+            <!-- QUESTIONS -->
+            <td>
+                {% set questions = row.submitted_questions | fromjson %}
+                <details>
+                    <summary>View Questions</summary>
+                    <div class="box small">
+                        <ul>
+                            {% for q in questions %}
+                                <li><strong>Q{{ loop.index }}:</strong> {{ q }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+            </td>
+
+            <!-- ANSWERS -->
+            <td>
+                {% set answers = row.submitted_answers | fromjson %}
+                <details>
+                    <summary>View Answers</summary>
+                    <div class="box small">
+                        <ul>
+                            {% for a in answers %}
+                                <li><strong>A{{ loop.index }}:</strong> {{ a }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </details>
+            </td>
+
+            <!-- RESUME -->
+            <td>
+                {% if row.resume_path %}
+                    <a href="{{ url_for('download_resume', filename=row.resume_path) }}">
+                        Download
+                    </a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+
+            <td>{{ row.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>
