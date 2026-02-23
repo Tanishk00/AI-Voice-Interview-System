@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin – Interview Submissions</title>
+
+    <style>
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            padding: 30px;
+            background: #f3f4f6;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            font-size: 14px;
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid #e5e7eb;
+            padding: 12px;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        th {
+            background: #1f2937;
+            color: white;
+            text-align: left;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* ================= MODAL STYLES ================= */
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: #ffffff;
+            width: 80%;
+            max-height: 85%;
+            overflow-y: auto;
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 18px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #ef4444;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h2>Interview Submissions (Admin)</h2>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>User Email</th>
+            <th>Resume Email</th>
+            <th>Scorecard</th>
+            <th>Submitted Questions</th>
+            <th>Submitted Answers</th>
+            <th>Resume</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for row in results %}
+        <tr>
+            <td>{{ row.id }}</td>
+            <td>{{ row.name }}</td>
+            <td>{{ row.email }}</td>
+            <td>{{ row.resume_email }}</td>
+
+            <!-- SCORECARD -->
+            <td>
+                {% set score = row.scorecard | fromjson %}
+                <a onclick="openModal('score-{{row.id}}')">View Scorecard</a>
+
+                <div id="score-{{row.id}}" class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-close" onclick="closeModal('score-{{row.id}}')">✖</div>
+
+                        <h3>Scorecard - {{row.name}}</h3>
+
+                        <p><strong>Overall Score:</strong> {{ score.overall_score }} / 10</p>
+
+                        <p><b>Communication:</b> {{ score.communication }}</p>
+                        <p><b>Confidence:</b> {{ score.confidence }}</p>
+                        <p><b>Technical:</b> {{ score.technical_knowledge }}</p>
+                        <p><b>Grammar:</b> {{ score.grammar }}</p>
+                        <p><b>Answer Quality:</b> {{ score.answer_quality }}</p>
+
+                        <h4>Summary</h4>
+                        <p>{{ score.summary }}</p>
+
+                        <h4>Strengths</h4>
+                        <ul>
+                            {% for s in score.strengths %}
+                                <li>{{ s }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h4>Areas for Improvement</h4>
+                        <ul>
+                            {% for a in score.areas_for_improvement %}
+                                <li>{{ a }}</li>
+                            {% endfor %}
+                        </ul>
+
+                        <h4>Recommendations</h4>
+                        <ul>
+                            {% for r in score.recommendations %}
+                                <li>{{ r }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </td>
+
+            <!-- QUESTIONS -->
+            <td>
+                {% set questions = row.submitted_questions | fromjson %}
+                <a onclick="openModal('questions-{{row.id}}')">View Questions</a>
+
+                <div id="questions-{{row.id}}" class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-close" onclick="closeModal('questions-{{row.id}}')">✖</div>
+                        <h3>Submitted Questions</h3>
+                        <ul>
+                            {% for q in questions %}
+                                <li><strong>Q{{ loop.index }}:</strong> {{ q }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </td>
+
+            <!-- ANSWERS -->
+            <td>
+                {% set answers = row.submitted_answers | fromjson %}
+                <a onclick="openModal('answers-{{row.id}}')">View Answers</a>
+
+                <div id="answers-{{row.id}}" class="modal-overlay">
+                    <div class="modal-content">
+                        <div class="modal-close" onclick="closeModal('answers-{{row.id}}')">✖</div>
+                        <h3>Submitted Answers</h3>
+                        <ul>
+                            {% for a in answers %}
+                                <li><strong>A{{ loop.index }}:</strong> {{ a }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </td>
+
+            <!-- RESUME -->
+            <td>
+                {% if row.resume_path %}
+                    <a href="{{ url_for('download_resume', filename=row.resume_path) }}">
+                        Download
+                    </a>
+                {% else %}
+                    N/A
+                {% endif %}
+            </td>
+
+            <td>{{ row.created_at }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+function openModal(id) {
+    document.getElementById(id).style.display = "flex";
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = "none";
+}
+</script>
+
+</body>
+</html>
